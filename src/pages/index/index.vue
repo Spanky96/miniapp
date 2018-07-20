@@ -1,108 +1,82 @@
 <template>
-  <div class="container">
-
-    <div class="userinfo" @click="bindViewTap">
-      <open-data class="userinfo-avatar" type="userAvatarUrl" @click="bindViewTap"></open-data>
-      <open-data class="userinfo-nickname" type="userGender" lang="zh_CN"></open-data>
-      <open-data type="userNickName"></open-data>
+  <div class="body-container grey-body">
+    <div class="top-banner">
+      <card text="BBS" ></card>
+      <picker mode="selector" v-if="array.length > 1" range-key="value" :range="array" :value="index" @change="optionChanged">
+        <button type="default">{{value}}</button>
+      </picker>
+      <button v-if="array.length == 1" @click="toLogin()" type="default">Log in</button>
     </div>
-
-    <div>
-      <button @click="clickHandle($event)" class="weui-btn" type="primary">按钮</button>
-    </div>
-
-    <div class="usermotto">
-      <div class="user-motto">
-        <card :text="motto"></card>
-      </div>
-    </div>
-
-    <form class="form-container">
-      <input type="text" class="form-control" v-model="motto" placeholder="v-model" />
-      <input type="text" class="form-control" v-model.lazy="motto" placeholder="v-model.lazy" />
-    </form>
-    <a href="/pages/counter/main" class="counter">去往Vuex示例页面</a>
-    <a href="/pages/login/main" class="counter">去往登录页面</a>
   </div>
 </template>
 
 <script>
 import card from '@/components/card';
-import Toast from 'mp-weui/packages/toast';
+import MpPicker from 'mp-weui/packages/picker';
 export default {
   data () {
+    var index = 0;
+    var value = '1';
+    var array = [{value: 'Log in', id: 4}];
     return {
-      motto: 'Hello World',
-      userInfo: {},
-      aa: '点击'
+      value, array, index
     };
   },
 
   components: {
-    card
+    card, MpPicker
   },
 
   methods: {
-    bindViewTap () {
-      const url = '../logs/main';
-      wx.navigateTo({
-        url
-      });
+    toLogin: function () {
+      wx.navigateTo({url: '/pages/login/main'});
     },
-    getUserInfo () {
-      // 调用登录接口
-      wx.login({
-        success: (res) => {
-          console.log(res.code);
-        }
-      });
-    },
-    clickHandle (ev) {
-      console.log('Clicked', ev);
-      Toast('提示信息', 1500);
+
+    optionChanged: function (e) {
+      this.index = e.target.value;
+      console.log(this.index);
+      console.log(this.array.find(i => i.id === this.index));
+      // this.value = this.array.find(i => i.id === this.index).value;
+      switch (this.index) {
+        case 0: console.log(1); break;
+        case 1: console.log(2); break;
+        case 2: console.log(3); break;
+        case 3: console.log(4); break;
+      }
     }
   },
 
-  created () {
-    // 调用应用实例的方法获取全局数据
-    this.getUserInfo();
+  onLoad () {
+    var user = wx.getStorageSync('login')['current_user'];
+    this.array = user ? [
+      {value: user.name, id: 0},
+      {value: 'I like', id: 1},
+      {value: 'My collection', id: 2},
+      {value: 'Log out', id: 3}] : [{value: 'Log in', id: 4}];
   }
 };
 </script>
 
 <style lang="scss" scoped>
-  .userinfo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    .userinfo-avatar {
-      width: 128rpx;
-      height: 128rpx;
-      margin: 20rpx;
-      border-radius: 50%;
-    }
-    .userinfo-nickname {
-      color: #aaa;
+  .grey-body {
+    background-color:#D2D6DE;
+    >div {
+      background-color: #FFFFFF;
     }
   }
 
-  .usermotto {
-    margin-top: 50px;
+  .body-container {
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:absolute;
+    right:0;
+    left:0;
+    .top-banner {
+      width: 90%;
+      margin-top: 10px;
+      display: flex;
+    }
   }
-
-  .form-control {
-    display: block;
-    padding: 0 12px;
-    margin-bottom: 5px;
-    border: 1px solid #ccc;
-  }
-
-  .counter {
-    display: inline-block;
-    margin: 10px auto;
-    padding: 5px 10px;
-    color: blue;
-    border: 1px solid blue;
-  }
-
 </style>

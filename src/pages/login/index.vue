@@ -62,10 +62,10 @@ export default {
     }
   },
 
-  created () {
+  mounted () {
     if (wx.getStorageSync('login')) {
-      console.log(123);
-      // wx.navigateTo({url: '/pages/index/main'});
+      console.log('Already Loged in. To main page..');
+      wx.navigateTo({url: '/pages/index/main'});
     }
   }
 };
